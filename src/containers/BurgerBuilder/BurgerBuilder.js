@@ -15,20 +15,11 @@ import withErrorHandler from '../../hoc/withErrorHandler';
 class BurgerBuilder extends Component {
   state = {
     purchasing: false,
-    loading: false,
   };
 
   // Fetch the ingredients from DB
   componentDidMount() {
-    // axios
-    //   .get(
-    //     'https://react-burger-builder-86ac9-default-rtdb.firebaseio.com/ingredients.json'
-    //   )
-    //   .then((res) => {
-    //     const fetchedIngredients = res.data;
-    //     this.setState({ ingredients: fetchedIngredients });
-    //   })
-    //   .catch((err) => {});
+    this.props.onInitIngredients();
   }
 
   // Calculates the total amount of ingredients and updates the purchaseable status accordingly
@@ -69,7 +60,11 @@ class BurgerBuilder extends Component {
     }
 
     // UI initialization before data fetch
-    let burger = <Spinner />;
+    let burger = this.props.error ? (
+      <p>Ingredients can't be loaded</p>
+    ) : (
+      <Spinner />
+    );
     let orderSummary = null;
 
     if (this.props.ings) {
@@ -97,11 +92,6 @@ class BurgerBuilder extends Component {
       );
     }
 
-    // Replaces the OrderSummary with a Spinner if the user continues to checkout
-    if (this.state.loading) {
-      orderSummary = <Spinner />;
-    }
-
     return (
       <Aux>
         <Modal
@@ -119,6 +109,7 @@ const mapStateToProps = (state) => {
   return {
     ings: state.ingredients,
     price: state.totalPrice,
+    error: state.error,
   };
 };
 
@@ -127,6 +118,7 @@ const mapDispatchToProps = (dispatch) => {
     onIngredientAdded: (ingName) => dispatch(actions.addIngredient(ingName)),
     onIngredientRemoved: (ingName) =>
       dispatch(actions.removeIngredient(ingName)),
+    onInitIngredients: () => dispatch(actions.initIngredients()),
   };
 };
 
