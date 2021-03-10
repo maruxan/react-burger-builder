@@ -1,0 +1,39 @@
+.MenuButton {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.MenuButton .Bar {
+  background-color: #fff;
+  position: relative;
+  height: 4px;
+  width: 40px;
+}
+
+.MenuButton .Bar::after,
+.MenuButton .Bar::before {
+  content: '';
+  position: absolute;
+  display: block;
+  height: 4px;
+  width: 40px;
+  background-color: #fff;
+}
+
+.MenuButton .Bar::after {
+  transform: translateY(10px);
+}
+.MenuButton .Bar::before {
+  transform: translateY(-10px);
+}
+
+@media screen and (min-width: 500px) {
+  .MenuButton {
+    display: none;
+  }
+}
