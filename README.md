@@ -1,1 +1,1 @@
-# ⚛ React Burger Builder �
+# ⚛ React Burger Builder
