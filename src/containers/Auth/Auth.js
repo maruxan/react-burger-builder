@@ -5,6 +5,7 @@ import * as actions from '../../store/actions/index';
 
 import Input from '../../components/UI/Input/Input';
 import Button from '../../components/UI/Button/Button';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 import classes from './Auth.module.css';
 
@@ -120,9 +121,24 @@ class Auth extends Component {
       />
     ));
 
+    if (this.props.loading) {
+      form = <Spinner />;
+    }
+
+    // Error messsage
+    let errorMessage = null;
+    if (this.props.error) {
+      errorMessage = (
+        <p style={{ color: 'red', fontWeight: 'bold' }}>
+          {this.props.error.message.replace(/_/g, ' ')}
+        </p>
+      );
+    }
+
     return (
       <div className={classes.Auth}>
         <form onSubmit={this.authSubmitHandler}>
+          {errorMessage}
           {form}
           <Button btnType="Success">SUBMIT</Button>
         </form>
@@ -134,6 +150,13 @@ class Auth extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    loading: state.auth.loading,
+    error: state.auth.error,
+  };
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     onAuthSubmit: (email, password, isSignup) =>
@@ -141,4 +164,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(Auth);
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);
