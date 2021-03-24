@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import * as actions from '../../store/actions/index';
 
@@ -45,6 +46,14 @@ class Auth extends Component {
     // Determines if the fomr is for signing up or signing in
     isSignup: true,
   };
+
+  // If the user is authenticated when building a burger, it should be redirected to the checkout page,
+  // otherwise, it should be redirected to the root page
+  componentDidMount() {
+    if (!this.props.buildingBurger && this.props.authRedirectPath !== '/') {
+      this.props.onSetAuthRedirectPath('/');
+    }
+  }
 
   // Input validation
   checkValidity = (value, rules) => {
@@ -135,8 +144,17 @@ class Auth extends Component {
       );
     }
 
+    // Redirect on login
+    let authRedirect = null;
+    if (this.props.isAuthenticated) {
+      if (this.props.authRedirectPath === '/checkout')
+        this.props.onInitPurchase();
+      authRedirect = <Redirect to={this.props.authRedirectPath} />;
+    }
+
     return (
       <div className={classes.Auth}>
+        {authRedirect}
         <form onSubmit={this.authSubmitHandler}>
           {errorMessage}
           {form}
@@ -154,6 +172,9 @@ const mapStateToProps = (state) => {
   return {
     loading: state.auth.loading,
     error: state.auth.error,
+    isAuthenticated: state.auth.token !== null,
+    authRedirectPath: state.auth.redirectPath,
+    buildingBurger: state.burgerBuilder.building,
   };
 };
 
@@ -161,6 +182,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onAuthSubmit: (email, password, isSignup) =>
       dispatch(actions.auth(email, password, isSignup)),
+    onSetAuthRedirectPath: (path) =>
+      dispatch(actions.setAuthRedirectPath(path)),
+    onInitPurchase: () => dispatch(actions.purchaseBurgerInit()),
   };
 };
 
